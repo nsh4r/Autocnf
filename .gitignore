@@ -1,0 +1,4 @@
+./.gitignore
+./inventory/host
+./inventory/vars_sec.yml
+./templates/sshkeys/

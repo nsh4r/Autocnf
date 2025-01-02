@@ -3,31 +3,25 @@
   hosts: local
   become: yes
   vars_files: 
-    - ./inventory/vault_vars.yml
+    - ./inventory/vars_sec.yml
   tasks:
     - name: Update and upgrade apt packages
       ansible.builtin.apt:
         upgrade: yes
         update_cache: yes
         cache_valid_time: 86400
-    - name: Hash admin password
-      ansible.builtin.set_fact:
-        admin_password_hash: "{{ ADMIN_PASSWORD | password_hash('sha512') }}"
-    - name: Hash amnesia password
-      ansible.builtin.set_fact:
-        amnesia_password_hash: "{{ AMNEZIA_PASSWORD | password_hash('sha512') }}"
     - name: Create Admin user
       ansible.builtin.user:
         name: admin
         shell: /bin/bash
         group: sudo
-        password: "{{ admin_password_hash }}"
+        password: "{{ ADMIN_PASSWORD }}"
     - name: Create Amnesia user
       ansible.builtin.user:
         name: amnesia
         shell: /bin/bash
         group: sudo
-        password: "{{ amnesia_password_hash }}"
+        password: "{{ AMNEZIA_PASSWORD }}"
     - name: Create sshkey dir for admin
       ansible.builtin.file:
         path: /home/admin/.ssh
