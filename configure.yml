@@ -15,13 +15,13 @@
         name: admin
         shell: /bin/bash
         group: sudo
-        password: "{{ ADMIN_PASSWORD }}"
+        password: "{{ ADMIN_PASSWORD | password_hash('sha512')}}"
     - name: Create Amnesia user
       ansible.builtin.user:
         name: amnesia
         shell: /bin/bash
         group: sudo
-        password: "{{ AMNEZIA_PASSWORD }}"
+        password: "{{ AMNEZIA_PASSWORD | password_hash('sha512')}}"
     - name: Create sshkey dir for admin
       ansible.builtin.file:
         path: /home/admin/.ssh
