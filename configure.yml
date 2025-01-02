@@ -1,0 +1,68 @@
+---
+- name: Create users and install fail2ban
+  hosts: local
+  become: yes
+  vars_files: 
+    - ./inventory/vault_vars.yml
+  tasks:
+    - name: Update and upgrade apt packages
+      ansible.builtin.apt:
+        upgrade: yes
+        update_cache: yes
+        cache_valid_time: 86400
+    - name: Hash admin password
+      ansible.builtin.set_fact:
+        admin_password_hash: "{{ ADMIN_PASSWORD | password_hash('sha512') }}"
+    - name: Hash amnesia password
+      ansible.builtin.set_fact:
+        amnesia_password_hash: "{{ AMNEZIA_PASSWORD | password_hash('sha512') }}"
+    - name: Create Admin user
+      ansible.builtin.user:
+        name: admin
+        shell: /bin/bash
+        group: sudo
+        password: "{{ admin_password_hash }}"
+    - name: Create Amnesia user
+      ansible.builtin.user:
+        name: amnesia
+        shell: /bin/bash
+        group: sudo
+        password: "{{ amnesia_password_hash }}"
+    - name: Create sshkey dir for admin
+      ansible.builtin.file:
+        path: /home/admin/.ssh
+        state: directory
+        owner: admin
+        mode: 0700
+    - name: Create sshkey dir for amnesia
+      ansible.builtin.file:
+        path: /home/amnesia/.ssh
+        state: directory
+        owner: amnesia
+        mode: 0700
+    - name: Copy ssh key for admin
+      ansible.builtin.copy:
+        src: ./templates/sshkeys/authorized_keys.pub
+        dest: /home/admin/.ssh/authorized_keys
+        owner: admin
+        mode: 0600
+    - name: Copy ssh key for amnesia
+      ansible.builtin.copy:
+        src: ./templates/sshkeys/authorized_keys.pub
+        dest: /home/amnesia/.ssh/authorized_keys
+        owner: amnesia
+        mode: 0600
+    - name: Install Fail2ban
+      ansible.builtin.apt:
+        name: fail2ban
+        state: present
+    - name: Configuration Fail2ban
+      ansible.builtin.template:
+        src: ./templates/fail2ban.j2
+        dest: /etc/fail2ban/jail.local
+      notify: restart fail2ban
+  handlers:
+    - name: restart fail2ban
+      ansible.builtin.service:
+        name: fail2ban
+        state: restarted

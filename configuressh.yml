@@ -1,0 +1,24 @@
+---
+- name: Configure sshd and restart sshd
+  hosts: local
+  become: yes
+  tasks:
+    - name: Configure sshd
+      ansible.builtin.lineinfile:
+        dest: /etc/ssh/sshd_config
+        regexp: "^PasswordAuthentication"
+        line: "PasswordAuthentication No"
+        state: present
+        backup: yes
+      with_items:
+        - regexp: "^PermitRootLogin"
+          line: "PermitRootLogin No"
+        - regexp: ^Port
+          line: Port 50222
+      notify: 
+        - restart ssh
+  handlers:
+    - name: restart ssh
+      ansible.builtin.service:
+        name: sshd
+        state: restarted

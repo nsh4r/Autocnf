@@ -1,0 +1,6 @@
+Пароли задавать в файле inventory/vault_vars.yml при помощи шифровки vault_secret.txt
+Команда: ansible-vault encrypt_string --vault-id vault_secret.txt 'your_passwd' --name 'AMNEZIA_PASSWORD'
+
+Для запуска плейбука после шифровки используем:
+ansible-playbook configure.yml --vault-id ./inventory/vault_secret.txt -vv
+
