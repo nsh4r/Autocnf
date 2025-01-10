@@ -1,4 +1,5 @@
 ./.gitignore
 ./inventory/host
 ./inventory/vars_sec.yml
-./templates/sshkeys/
+./roles/createadminssh/templates/sshkeys/authorized_keys.pub
+./roles/createamneziassh/templates/sshkeys/authorized_keys.pub
