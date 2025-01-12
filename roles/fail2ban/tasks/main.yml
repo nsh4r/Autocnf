@@ -1,0 +1,11 @@
+---
+
+- name: Install Fail2ban
+  ansible.builtin.apt:
+    name: fail2ban
+    state: present
+- name: Configuration Fail2ban
+  ansible.builtin.template:
+    src: ../templates/fail2ban.j2
+    dest: /etc/fail2ban/jail.local
+  notify: restart fail2ban

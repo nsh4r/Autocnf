@@ -1,0 +1,16 @@
+---
+
+- name: Configure sshd
+  ansible.builtin.lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+    backup: yes
+  with_items:
+    - regexp: "^PermitRootLogin"
+      line: "PermitRootLogin No"
+    - regexp: "^Port"
+      line: "Port 50222"
+  notify: 
+    - restart ssh

@@ -1,0 +1,22 @@
+---
+
+- name: Create Admin user
+  ansible.builtin.user:
+    name: admin
+    shell: /bin/bash
+    group: sudo
+    password: "*"
+
+- name: Create sshkey dir for admin
+  ansible.builtin.file:
+    path: /home/admin/.ssh
+    state: directory
+    owner: admin
+    mode: 0700
+
+- name: Copy ssh key for admin
+  ansible.builtin.copy:
+    src: ../templates/authorized_keys.pub
+    dest: /home/admin/.ssh/authorized_keys
+    owner: admin
+    mode: 0600

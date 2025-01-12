@@ -1,0 +1,22 @@
+---
+
+- name: Create Amnesia user
+  ansible.builtin.user:
+    name: amnesia
+    shell: /bin/bash
+    group: sudo
+    password: "*"
+
+- name: Create sshkey dir for amnesia
+  ansible.builtin.file:
+    path: /home/amnesia/.ssh
+    state: directory
+    owner: amnesia
+    mode: 0700
+
+- name: Copy ssh key for amnesia
+  ansible.builtin.copy:
+    src: ../templates/authorized_keys.pub
+    dest: /home/amnesia/.ssh/authorized_keys
+    owner: amnesia
+    mode: 0600
