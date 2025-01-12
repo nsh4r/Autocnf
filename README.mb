@@ -5,4 +5,4 @@
 ansible-playbook configure.yml --vault-id ./inventory/vault_secret.txt -vv
 
 
-ansible-vault ansible-vault encrypt_string --vault-id inventory/vault_secret.txt 'Tr4Va_yD0m4' --name 'ADMIN_PASSWORD'
+ansible-vault ansible-vault encrypt_string --vault-id inventory/vault_secret.txt 'PASSWORD' --name 'ADMIN_PASSWORD'
