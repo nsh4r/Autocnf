@@ -1,0 +1,21 @@
+---
+- name: Prepare host
+  hosts: raspberrypi
+  become: true
+  become_method: sudo
+  become_user: root
+  remote_user: sharana
+
+  vars:
+    nginx_user: www-data
+
+  tasks:
+  - name: Update and upgrade apt packages
+    ansible.builtin.apt:
+      upgrade: yes
+      update_cache: yes
+      cache_valid_time: 86400
+
+  roles:
+  - nginx 
+  - docker

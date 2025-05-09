@@ -6,3 +6,9 @@ ansible-playbook configure.yml --vault-id ./inventory/vault_secret.txt -vv
 
 
 ansible-vault ansible-vault encrypt_string --vault-id inventory/vault_secret.txt 'PASSWORD' --name 'ADMIN_PASSWORD'
+
+
+
+hostingprepare.yml - устанавливает на хост nginx и docker
+ansible-playbook hostingprepare.yml -kK - для запуска
+

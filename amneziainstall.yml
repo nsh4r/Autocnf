@@ -9,9 +9,9 @@
         update_cache: yes
         cache_valid_time: 86400
   roles:
-    - createadminssh
-    - createamneziassh
-    - fail2ban
-    - offroot
+   - createadminssh
+   - createamneziassh
+   - fail2ban
+   - offroot
     - docker
 
