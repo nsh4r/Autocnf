@@ -1,0 +1,22 @@
+---
+- name: Create dir for proftestproj
+  ansible.builtin.file:
+    path: '/opt/proftest'
+    state: directory
+
+- name: Copy dockerfile and env for proftest project
+  ansible.builtin.template:
+    src: 'templates/{{item}}'
+    dest: '/opt/{{item}}'
+  loop:
+  - 'proftest/.env'
+  - 'proftest/docker-compose.yml'
+  notify:
+  - deploy docker
+
+- name: Copy nginx conf for proftest app
+  ansible.builtin.template:
+    src: 'templates/nginx/proftest.conf'
+    dest: '/etc/nginx/conf.d/'
+  notify:
+    - nginx systemd

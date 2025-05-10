@@ -1,0 +1,12 @@
+---
+- name: nginx systemd
+  systemd:
+    name: nginx
+    enabled: yes
+    state: started
+
+- name: deploy docker
+  community.docker.docker_compose_v2:
+    project_src: '/opt/proftest/'
+    files:
+    - docker-compose.yml

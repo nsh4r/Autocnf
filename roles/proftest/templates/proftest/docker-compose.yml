@@ -1,0 +1,61 @@
+services:
+  backend-app:
+    image: nsh4r/backend-app:${BE_TAG}
+    restart: unless-stopped
+    ports:
+      - "${BE_PORT}:8080"
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    volumes:
+      - .:/opt/app
+
+  frontend-app:
+    image: nsh4r/frontend-app:${FE_TAG}
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_END: production
+    ports:
+      - "${FE_PORT}:5173"
+    depends_on:
+      - backend-app
+
+
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    ports:
+      - "${DB_PORT}:5432"
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+     - .:/var/lib/postgresql/data
+
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4:9.1.0
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_LISTEN_PORT: 9080  # Добавьте это
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    ports:
+      - "${PGADMIN_PORT}:9080"
+
+volumes:
+  pgadmin_data:
