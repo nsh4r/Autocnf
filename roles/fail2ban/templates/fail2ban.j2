@@ -1,6 +1,66 @@
+#
+# Fail2ban configuration file
+# Managed by Ansible - DO NOT EDIT MANUALLY
+#
+
+[DEFAULT]
+
+# Ban hosts for the specified time
+bantime = {{ fail2ban_bantime | default('1d') }}
+
+# A host is banned if it has generated maxretry during the last findtime seconds
+findtime = {{ fail2ban_findtime | default('30m') }}
+maxretry = {{ fail2ban_maxretry | default(3) }}
+
+# Default logging
+loglevel = {{ fail2ban_loglevel | default('INFO') }}
+logtarget = {{ fail2ban_logtarget | default('/var/log/fail2ban.log') }}
+
+# Default action to take: ban only
+action = %(action_mw)s
+
+# Ignore localhost and specified IPs
+ignoreip = {{ fail2ban_ignoreip | default('127.0.0.1/8 ::1') }}
+
+# Email notifications (optional)
+{% if fail2ban_destemail is defined %}
+destemail = {{ fail2ban_destemail }}
+{% endif %}
+{% if fail2ban_sender is defined %}
+sender = {{ fail2ban_sender }}
+{% endif %}
+{% if fail2ban_mta is defined %}
+mta = {{ fail2ban_mta }}
+{% endif %}
+
+# SSH jail configuration
 [sshd]
-enable   = true
-ignoreip = 127.0.0.1/8 46.159.172.126
-maxretry = 3
-findtime = 30m
-bantime  = 1d
+enabled = {{ fail2ban_sshd_enabled | default('true') }}
+port = {{ fail2ban_sshd_port | default('ssh') }}
+filter = sshd
+logpath = {{ fail2ban_sshd_logpath | default('/var/log/auth.log') }}
+maxretry = {{ fail2ban_sshd_maxretry | default(fail2ban_maxretry | default(3)) }}
+bantime = {{ fail2ban_sshd_bantime | default(fail2ban_bantime | default('1d')) }}
+findtime = {{ fail2ban_sshd_findtime | default(fail2ban_findtime | default('30m')) }}
+
+{% if fail2ban_sshd_custom_maxretry is defined %}
+maxretry = {{ fail2ban_sshd_custom_maxretry }}
+{% endif %}
+
+# Protection for other services (optional)
+{% if fail2ban_additional_jails is defined %}
+{% for jail in fail2ban_additional_jails %}
+
+[{{ jail.name }}]
+enabled = {{ jail.enabled | default('true') }}
+port = {{ jail.port }}
+filter = {{ jail.filter | default(jail.name) }}
+logpath = {{ jail.logpath | default('/var/log/auth.log') }}
+maxretry = {{ jail.maxretry | default(fail2ban_maxretry | default(3)) }}
+bantime = {{ jail.bantime | default(fail2ban_bantime | default('1d')) }}
+findtime = {{ jail.findtime | default(fail2ban_findtime | default('30m')) }}
+{% if jail.custom is defined %}
+{{ jail.custom }}
+{% endif %}
+{% endfor %}
+{% endif %}

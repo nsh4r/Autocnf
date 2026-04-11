@@ -1,0 +1,28 @@
+---
+# Default variables for Fail2ban role
+
+# General settings
+fail2ban_bantime: "1d"
+fail2ban_findtime: "30m"
+fail2ban_maxretry: 3
+fail2ban_loglevel: "INFO"
+fail2ban_logtarget: "/var/log/fail2ban.log"
+fail2ban_ignoreip: "127.0.0.1/8 ::1"
+
+# SSH jail settings
+fail2ban_sshd_enabled: "true"
+fail2ban_sshd_port: "ssh"
+fail2ban_sshd_logpath: "/var/log/auth.log"
+
+# Email notifications (uncomment and set if needed)
+# fail2ban_destemail: admin@example.com
+# fail2ban_sender: fail2ban@example.com
+# fail2ban_mta: sendmail
+
+# Additional jails (example)
+# fail2ban_additional_jails:
+#   - name: nginx-http-auth
+#     port: http,https
+#     filter: nginx-http-auth
+#     logpath: /var/log/nginx/*error.log
+#     maxretry: 5

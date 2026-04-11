@@ -1,5 +1,5 @@
-#[local]
-#localhost ansible_connection=local
-
 [raspberrypi]
 raspberrypihome ansible_host=192.168.1.129 ansible_user=sharana
+
+[VPS]
+geohosting1c1m ansible_host=45.15.129.186 ansible_user=root ansible_password='!@qwasZX' ansible_ssh_pass='!@qwasZX'

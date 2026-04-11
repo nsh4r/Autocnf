@@ -1,6 +1,6 @@
 ---
 - name: Create users and install fail2ban
-  hosts: all 
+  hosts: VPS 
   become: yes
   tasks:
     - name: Update and upgrade apt packages
@@ -12,6 +12,6 @@
    - createadminssh
    - createamneziassh
    - fail2ban
+   - docker
    - offroot
-    - docker
 

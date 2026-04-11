@@ -1,11 +1,90 @@
 ---
+# Fail2ban Installation and Configuration
 
 - name: Install Fail2ban
   ansible.builtin.apt:
     name: fail2ban
     state: present
-- name: Configuration Fail2ban
+    update_cache: yes
+    cache_valid_time: 3600
+  tags:
+    - fail2ban
+    - install
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: yes
+  tags:
+    - fail2ban
+    - install
+
+- name: Check if fail2ban service file exists
+  ansible.builtin.stat:
+    path: /lib/systemd/system/fail2ban.service
+  register: fail2ban_unit
+  tags:
+    - fail2ban
+    - install
+
+- name: Create fail2ban systemd service file (if missing)
+  ansible.builtin.copy:
+    content: |
+      [Unit]
+      Description=Fail2Ban Service
+      Documentation=man:fail2ban(1)
+      After=network.target
+
+      [Service]
+      Type=forking
+      ExecStart=/usr/bin/fail2ban-server -xf start
+      ExecReload=/bin/kill -HUP $MAINPID
+      ExecStop=/usr/bin/fail2ban-client stop
+      PIDFile=/var/run/fail2ban/fail2ban.pid
+      Restart=on-failure
+      RestartSec=5s
+
+      [Install]
+      WantedBy=multi-user.target
+    dest: /lib/systemd/system/fail2ban.service
+    owner: root
+    group: root
+    mode: '0644'
+  when: not fail2ban_unit.stat.exists
+  notify: reload systemd daemon
+  tags:
+    - fail2ban
+    - install
+
+- name: Ensure Fail2ban log file exists
+  ansible.builtin.file:
+    path: "{{ fail2ban_logtarget | default('/var/log/fail2ban.log') }}"
+    state: touch
+    owner: root
+    group: adm
+    mode: '0640'
+  ignore_errors: yes
+  tags:
+    - fail2ban
+    - configuration
+
+- name: Configure Fail2ban
   ansible.builtin.template:
-    src: ../templates/fail2ban.j2
+    src: fail2ban.j2
     dest: /etc/fail2ban/jail.local
+    owner: root
+    group: root
+    mode: '0644'
   notify: restart fail2ban
+  tags:
+    - fail2ban
+    - configuration
+
+- name: Ensure Fail2ban service is enabled and started
+  ansible.builtin.systemd:
+    name: fail2ban
+    state: started
+    enabled: yes
+    daemon_reload: yes
+  tags:
+    - fail2ban
+    - service
