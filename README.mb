@@ -12,3 +12,20 @@ ansible-vault ansible-vault encrypt_string --vault-id inventory/vault_secret.txt
 hostingprepare.yml - устанавливает на хост nginx и docker
 ansible-playbook hostingprepare.yml -kK - для запуска
 
+amneziainstall.yml - создаёт пользователей admin и amnesia, настраивает ssh-доступ по ключам, ставит fail2ban и docker.
+Запуск:
+ansible-playbook amneziainstall.yml --vault-id ./inventory/vault_secret.txt -kK -vv
+Пароли задавать в файле inventory/vault_vars.yml при помощи шифровки vault_secret.txt
+Команда: ansible-vault encrypt_string --vault-id vault_secret.txt 'your_passwd' --name 'AMNEZIA_PASSWORD'
+
+Для запуска плейбука после шифровки используем:
+ansible-playbook configure.yml --vault-id ./inventory/vault_secret.txt -vv
+
+
+ansible-vault ansible-vault encrypt_string --vault-id inventory/vault_secret.txt 'PASSWORD' --name 'ADMIN_PASSWORD'
+
+
+
+hostingprepare.yml - устанавливает на хост nginx и docker
+ansible-playbook hostingprepare.yml -kK - для запуска
+
