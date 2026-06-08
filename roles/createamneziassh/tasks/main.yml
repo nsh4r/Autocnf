@@ -1,5 +1,22 @@
 ---
 
+- name: Ensure templates directory for createamneziassh role exists on control node
+  delegate_to: localhost
+  run_once: true
+  ansible.builtin.file:
+    path: "{{ playbook_dir }}/roles/createamneziassh/templates"
+    state: directory
+    mode: "0700"
+
+- name: Generate SSH keypair for amnesia on control node
+  delegate_to: localhost
+  run_once: true
+  ansible.builtin.openssh_keypair:
+    path: "{{ playbook_dir }}/roles/createamneziassh/templates/amnesia_id_rsa"
+    size: 4096
+    type: rsa
+    state: present
+
 - name: Create Amnesia user
   ansible.builtin.user:
     name: amnesia
@@ -14,9 +31,7 @@
     owner: amnesia
     mode: 0700
 
-- name: Copy ssh key for amnesia
-  ansible.builtin.copy:
-    src: ../templates/authorized_keys.pub
-    dest: /home/amnesia/.ssh/authorized_keys
-    owner: amnesia
-    mode: 0600
+- name: Install generated ssh public key for amnesia
+  ansible.builtin.authorized_key:
+    user: amnesia
+    key: "{{ lookup('file', playbook_dir + '/roles/createamneziassh/templates/amnesia_id_rsa.pub') }}"
