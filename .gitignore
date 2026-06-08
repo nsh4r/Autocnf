@@ -1,2 +1,6 @@
-./roles/*/templates/autorized_keys*
+./roles/*/templates/authorized_keys*
+./roles/createadminssh/templates/admin_id_rsa
+./roles/createadminssh/templates/admin_id_rsa.pub
+./roles/createamneziassh/templates/amnesia_id_rsa
+./roles/createamneziassh/templates/amnesia_id_rsa.pub
 ./inventory/hosts
