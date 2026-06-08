@@ -1,5 +1,22 @@
 ---
 
+- name: Ensure templates directory for createadminssh role exists on control node
+  delegate_to: localhost
+  run_once: true
+  ansible.builtin.file:
+    path: "{{ playbook_dir }}/roles/createadminssh/templates"
+    state: directory
+    mode: "0700"
+
+- name: Generate SSH keypair for admin on control node
+  delegate_to: localhost
+  run_once: true
+  ansible.builtin.openssh_keypair:
+    path: "{{ playbook_dir }}/roles/createadminssh/templates/admin_id_rsa"
+    size: 4096
+    type: rsa
+    state: present
+
 - name: Create Admin user
   ansible.builtin.user:
     name: admin
@@ -14,9 +31,7 @@
     owner: admin
     mode: 0700
 
-- name: Copy ssh key for admin
-  ansible.builtin.copy:
-    src: ../templates/authorized_keys.pub
-    dest: /home/admin/.ssh/authorized_keys
-    owner: admin
-    mode: 0600
+- name: Install generated ssh public key for admin
+  ansible.builtin.authorized_key:
+    user: admin
+    key: "{{ lookup('file', playbook_dir + '/roles/createadminssh/templates/admin_id_rsa.pub') }}"
